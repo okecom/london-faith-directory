@@ -569,6 +569,20 @@ a {
     color: #05603a;
 }
 
+.edit-current-photo {
+    margin-top: 8px;
+}
+
+.edit-current-photo img {
+    display: block;
+
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+
+    border-radius: 8px;
+}
+
 
 /* ========================================
    Tablet

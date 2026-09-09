@@ -131,7 +131,10 @@
                                     </a>
 
                                     <a
-                                        href="#"
+                                        href="{{ route(
+                                            'organizations.manage.edit',
+                                            $organization
+                                        ) }}"
                                         class="button button-small button-edit"
                                     >
                                         Edit

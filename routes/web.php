@@ -35,3 +35,15 @@ Route::post(
     '/manage/organizations',
     [OrganizationManagementController::class, 'store']
 )->name('organizations.manage.store');
+
+
+Route::get(
+    '/manage/organizations/{organization}/edit',
+    [OrganizationManagementController::class, 'edit']
+)->name('organizations.manage.edit');
+
+
+Route::put(
+    '/manage/organizations/{organization}',
+    [OrganizationManagementController::class, 'update']
+)->name('organizations.manage.update');
