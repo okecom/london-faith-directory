@@ -76,7 +76,15 @@
                         <tr>
 
                             <td>
-                                {{ $organization->name }}
+                                <a
+                                    href="{{ route('organizations.show', [
+                                        'organization' => $organization,
+                                        'from' => request()->fullUrl(),
+                                    ]) }}"
+                                    class="organization-link"
+                                >
+                                    {{ $organization->name }}
+                                </a>
                             </td>
 
                             <td>

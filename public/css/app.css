@@ -366,6 +366,108 @@ a {
 
 
 /* ========================================
+   Organisation links
+======================================== */
+
+.organization-link {
+    color: #1f3a5f;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.organization-link:hover,
+.organization-link:focus {
+    text-decoration-thickness: 2px;
+}
+
+
+/* ========================================
+   Organisation profile
+======================================== */
+
+.profile-subtitle {
+    margin-top: 0;
+    color: #666;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    gap: 25px;
+
+    margin-top: 30px;
+}
+
+.profile-photo img {
+    display: block;
+
+    width: 100%;
+    max-width: 400px;
+
+    height: auto;
+
+    border-radius: 8px;
+}
+
+.profile-photo-placeholder {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    max-width: 400px;
+    min-height: 220px;
+
+    padding: 20px;
+
+    border-radius: 8px;
+
+    background: #e9ecef;
+    color: #666;
+
+    text-align: center;
+}
+
+.profile-details dl {
+    margin: 0;
+}
+
+.profile-detail {
+    padding: 12px 0;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.profile-detail:first-child {
+    padding-top: 0;
+}
+
+.profile-detail dt {
+    margin-bottom: 3px;
+
+    font-weight: bold;
+}
+
+.profile-detail dd {
+    margin: 0;
+
+    overflow-wrap: anywhere;
+}
+
+.profile-description {
+    margin-top: 35px;
+}
+
+.profile-description h2 {
+    margin-bottom: 10px;
+}
+
+
+
+
+/* ========================================
    Tablet
 ======================================== */
 
@@ -415,6 +517,18 @@ a {
         flex-direction: row;
         align-items: center;
     }
+
+    .profile-grid {
+        grid-template-columns: 280px 1fr;
+        align-items: start;
+    }
+
+    .profile-photo img,
+    .profile-photo-placeholder {
+        max-width: none;
+    }
+
+
 }
 
 
@@ -434,6 +548,11 @@ a {
 
     .site-title {
         font-size: 1.6rem;
+    }
+
+    .profile-grid {
+        grid-template-columns: 320px 1fr;
+        gap: 36px;
     }
 
 }

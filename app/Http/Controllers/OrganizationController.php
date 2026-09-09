@@ -111,4 +111,20 @@ class OrganizationController extends Controller
             'organizations' => $organizations,
         ]);
     }
+
+
+    public function show(
+        Request $request,
+        Organization $organization
+    ): View {
+        $organization->load([
+            'denomination.religion',
+            'location',
+        ]);
+
+        return view('organizations.show', [
+            'organization' => $organization,
+            'backUrl' => $request->query('from'),
+        ]);
+    }
 }

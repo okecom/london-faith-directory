@@ -13,3 +13,8 @@ Route::get(
     '/organizations/results',
     [OrganizationController::class, 'results']
 )->name('organizations.results');
+
+Route::get(
+    '/organizations/{organization}',
+    [OrganizationController::class, 'show']
+)->name('organizations.show');
