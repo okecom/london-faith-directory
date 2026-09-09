@@ -464,6 +464,67 @@ a {
     margin-bottom: 10px;
 }
 
+/* ========================================
+   Organisation management
+======================================== */
+
+.management-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.record-search {
+    margin-bottom: 30px;
+    padding: 20px;
+
+    border-radius: 6px;
+
+    background: #f4f6f8;
+}
+
+.record-search .form-group {
+    margin-bottom: 15px;
+}
+
+.crud-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.button-small {
+    width: 100%;
+    padding: 8px 12px;
+
+    font-size: 0.9rem;
+}
+
+.button-edit {
+    background: #b7791f;
+}
+
+.button-edit:hover,
+.button-edit:focus {
+    background: #8c5d18;
+}
+
+.button-delete {
+    background: #b42318;
+}
+
+.button-delete:hover,
+.button-delete:focus {
+    background: #7a271a;
+}
+
+.create-button {
+    white-space: nowrap;
+}
+
+
 
 
 
@@ -528,6 +589,31 @@ a {
         max-width: none;
     }
 
+    .management-heading {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    }
+
+    .record-search {
+        display: flex;
+        align-items: end;
+        gap: 15px;
+    }
+
+    .record-search .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .crud-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .button-small {
+        width: auto;
+    }
 
 }
 

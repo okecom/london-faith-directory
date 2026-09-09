@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\OrganizationManagementController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,3 +18,9 @@ Route::get(
     '/organizations/{organization}',
     [OrganizationController::class, 'show']
 )->name('organizations.show');
+
+Route::get(
+    '/manage/organizations',
+    [OrganizationManagementController::class, 'index']
+)->name('organizations.manage.index');
+

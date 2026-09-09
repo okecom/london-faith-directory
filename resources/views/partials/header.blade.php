@@ -15,6 +15,10 @@
             </a>
 
             {{-- Future feature links can go here --}}
+
+            <a href="{{ route('organizations.manage.index') }}">
+                Manage Organisations
+            </a>
         </nav>
 
     </div>
