@@ -24,3 +24,14 @@ Route::get(
     [OrganizationManagementController::class, 'index']
 )->name('organizations.manage.index');
 
+
+Route::get(
+    '/manage/organizations/create',
+    [OrganizationManagementController::class, 'create']
+)->name('organizations.manage.create');
+
+
+Route::post(
+    '/manage/organizations',
+    [OrganizationManagementController::class, 'store']
+)->name('organizations.manage.store');

@@ -524,8 +524,50 @@ a {
     white-space: nowrap;
 }
 
+/* ========================================
+   Organisation CRUD forms
+======================================== */
 
+.organisation-form {
+    max-width: 800px;
+}
 
+.organisation-form textarea {
+    display: block;
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #aaa;
+    border-radius: 5px;
+
+    font: inherit;
+
+    resize: vertical;
+}
+
+.organisation-form textarea:focus {
+    outline: 3px solid rgba(31, 58, 95, 0.2);
+    border-color: #1f3a5f;
+}
+
+.organisation-form input[type="file"] {
+    padding: 10px;
+
+    background: white;
+}
+
+.success-message {
+    margin-bottom: 25px;
+    padding: 15px;
+
+    border-left: 4px solid #067647;
+    border-radius: 5px;
+
+    background: #ecfdf3;
+    color: #05603a;
+}
 
 
 /* ========================================

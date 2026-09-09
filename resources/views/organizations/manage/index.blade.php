@@ -6,6 +6,17 @@
 
 <div class="page-card">
 
+        @if (session('success'))
+
+        <div
+            class="success-message"
+            role="status"
+        >
+            {{ session('success') }}
+        </div>
+
+        @endif
+
     <div class="management-heading">
 
         <div>
@@ -20,7 +31,7 @@
         </div>
 
         <a
-            href="#"
+            href="{{ route('organizations.manage.create') }}"
             class="button create-button"
         >
             + Create New Organisation
