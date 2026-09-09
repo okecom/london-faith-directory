@@ -411,5 +411,27 @@ class OrganizationManagementController extends Controller
                 $organization->id .
                 ' was updated successfully.'
             );
+    } 
+    
+  public function destroy(
+        Organization $organization
+    ): RedirectResponse {
+
+        $organizationId = $organization->id;
+        $organizationName = $organization->name;
+
+        $organization->delete();
+
+        return redirect()
+            ->route('organizations.manage.index')
+            ->with(
+                'success',
+                'Organisation #' .
+                $organizationId .
+                ' (' .
+                $organizationName .
+                ') was deleted successfully.'
+            );
     }  
+
 }

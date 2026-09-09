@@ -47,3 +47,8 @@ Route::put(
     '/manage/organizations/{organization}',
     [OrganizationManagementController::class, 'update']
 )->name('organizations.manage.update');
+
+Route::delete(
+    '/manage/organizations/{organization}',
+    [OrganizationManagementController::class, 'destroy']
+)->name('organizations.manage.destroy');

@@ -140,12 +140,34 @@
                                         Edit
                                     </a>
 
-                                    <button
-                                        type="button"
-                                        class="button button-small button-delete"
+                                    
+                                    <form
+                                        method="POST"
+                                        action="{{ route(
+                                            'organizations.manage.destroy',
+                                            $organization
+                                        ) }}"
+                                        class="delete-form"
+                                        onsubmit="return confirm(
+                                            @js(
+                                                'Are you sure you want to delete "' .
+                                                $organization->name .
+                                                '"? This action cannot be undone.'
+                                            )
+                                        );"
                                     >
-                                        Delete
-                                    </button>
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            class="button button-small button-delete"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </form>
 
                                 </div>
 
