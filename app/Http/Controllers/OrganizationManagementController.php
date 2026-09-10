@@ -413,25 +413,66 @@ class OrganizationManagementController extends Controller
             );
     } 
     
-  public function destroy(
-        Organization $organization
-    ): RedirectResponse {
+    public function destroy(
+            Organization $organization
+        ): RedirectResponse {
 
-        $organizationId = $organization->id;
-        $organizationName = $organization->name;
+            $organizationId = $organization->id;
+            $organizationName = $organization->name;
 
-        $organization->delete();
+            $organization->delete();
+
+            return redirect()
+                ->route('organizations.manage.index')
+                ->with(
+                    'success',
+                    'Organisation #' .
+                    $organizationId .
+                    ' (' .
+                    $organizationName .
+                    ') was archived successfully.'
+                );
+        }  
+
+    public function archived(Request $request): View
+    {
+        $query = Organization::onlyTrashed();
+
+        if ($request->filled('record_number')) {
+            $query->where(
+                'id',
+                $request->input('record_number')
+            );
+        }
+
+        $organizations = $query
+            ->orderBy('id')
+            ->paginate(5)
+            ->withQueryString();
+
+        return view('organizations.manage.archived', [
+            'organizations' => $organizations,
+        ]);
+    }
+
+
+    public function restore(int $organization): RedirectResponse
+    {
+        $organization = Organization::onlyTrashed()
+            ->findOrFail($organization);
+
+        $organization->restore();
 
         return redirect()
-            ->route('organizations.manage.index')
+            ->route('organizations.manage.archived')
             ->with(
                 'success',
                 'Organisation #' .
-                $organizationId .
+                $organization->id .
                 ' (' .
-                $organizationName .
-                ') was deleted successfully.'
+                $organization->name .
+                ') was restored successfully.'
             );
-    }  
+    }
 
 }

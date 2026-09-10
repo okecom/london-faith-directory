@@ -37,6 +37,13 @@
             + Create New Organisation
         </a>
 
+        <a
+            href="{{ route('organizations.manage.archived') }}"
+            class="button button-secondary"
+        >
+            Archived Organisations
+        </a>
+
     </div>
 
 
@@ -150,9 +157,9 @@
                                         class="delete-form"
                                         onsubmit="return confirm(
                                             @js(
-                                                'Are you sure you want to delete "' .
+                                                'Are you sure you want to archive "' .
                                                 $organization->name .
-                                                '"? This action cannot be undone.'
+                                                '"? It will no longer appear in the directory.'
                                             )
                                         );"
                                     >
@@ -164,7 +171,7 @@
                                             type="submit"
                                             class="button button-small button-delete"
                                         >
-                                            Delete
+                                            Archive
                                         </button>
 
                                     </form>

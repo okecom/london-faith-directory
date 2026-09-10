@@ -3,6 +3,20 @@ use App\Http\Controllers\OrganizationManagementController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Support\Facades\Route;
 
+
+
+
+Route::get(
+    '/manage/organizations/archived',
+    [OrganizationManagementController::class, 'archived']
+)->name('organizations.manage.archived');
+
+
+Route::patch(
+    '/manage/organizations/{organization}/restore',
+    [OrganizationManagementController::class, 'restore']
+)->name('organizations.manage.restore');
+
 Route::get(
     '/',
     [OrganizationController::class, 'search']
