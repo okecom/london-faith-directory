@@ -136,4 +136,117 @@ class GroupManagementController extends Controller
                 ') was created successfully.'
             );
     }
+
+public function show(Group $group): View
+{
+    $group->load('organization');
+
+    return view('groups.manage.show', [
+        'group' => $group,
+    ]);
+}
+
+
+public function edit(Group $group): View
+{
+    $group->load('organization');
+
+    return view('groups.manage.edit', [
+        'group' => $group,
+    ]);
+}
+
+
+public function update(
+    Request $request,
+    Group $group
+): RedirectResponse {
+    $validated = $request->validate(
+        [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'description' => [
+                'nullable',
+                'string',
+            ],
+            'contact_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'telephone' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
+        ],
+        [
+            'name.required' =>
+                'Please enter the group name.',
+        ]
+    );
+
+    /*
+     * Head Office keeps its reserved name.
+     */
+    if ($group->is_head_office) {
+        $validated['name'] = 'Head Office';
+    }
+
+    /*
+     * Check for another active group with
+     * the same name in this organisation.
+     */
+    $duplicateExists = Group::where(
+            'organization_id',
+            $group->organization_id
+        )
+        ->where('name', $validated['name'])
+        ->where('id', '!=', $group->id)
+        ->exists();
+
+    if ($duplicateExists) {
+        return back()
+            ->withInput()
+            ->withErrors([
+                'name' =>
+                    'This organisation already has a group with that name.',
+            ]);
+    }
+
+    $group->update([
+        'name' => $validated['name'],
+        'description' =>
+            $validated['description'] ?? null,
+        'contact_name' =>
+            $validated['contact_name'] ?? null,
+        'telephone' =>
+            $validated['telephone'] ?? null,
+        'email' =>
+            $validated['email'] ?? null,
+    ]);
+
+    return redirect()
+        ->route('groups.manage.index', [
+            'organization_id' =>
+                $group->organization_id,
+        ])
+        ->with(
+            'success',
+            'Group #' .
+            $group->id .
+            ' (' .
+            $group->name .
+            ') was updated successfully.'
+        );
+}
+
 }

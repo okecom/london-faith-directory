@@ -169,21 +169,25 @@
 
                                     <div class="crud-actions">
 
-                                        <button
-                                            type="button"
+                                        <a
+                                            href="{{ route(
+                                                'groups.manage.show',
+                                                $group
+                                            ) }}"
                                             class="button button-small"
-                                            disabled
                                         >
                                             Show
-                                        </button>
+                                        </a>
 
-                                        <button
-                                            type="button"
+                                        <a
+                                            href="{{ route(
+                                                'groups.manage.edit',
+                                                $group
+                                            ) }}"
                                             class="button button-small button-edit"
-                                            disabled
                                         >
                                             Edit
-                                        </button>
+                                        </a>
 
                                         @unless ($group->is_head_office)
 

@@ -82,3 +82,18 @@ Route::post(
     '/manage/organizations/{organization}/groups',
     [GroupManagementController::class, 'store']
 )->name('groups.manage.store');
+
+Route::get(
+    '/manage/groups/{group}',
+    [GroupManagementController::class, 'show']
+)->name('groups.manage.show');
+
+Route::get(
+    '/manage/groups/{group}/edit',
+    [GroupManagementController::class, 'edit']
+)->name('groups.manage.edit');
+
+Route::put(
+    '/manage/groups/{group}',
+    [GroupManagementController::class, 'update']
+)->name('groups.manage.update');

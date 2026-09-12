@@ -624,6 +624,24 @@ a {
     margin-bottom: 0;
 }
 
+.group-details {
+    margin: 25px 0;
+}
+
+.group-details dl {
+    margin: 0;
+}
+
+.group-details dt {
+    margin-top: 18px;
+    font-weight: bold;
+    color: #1f3a5f;
+}
+
+.group-details dd {
+    margin: 4px 0 0;
+}
+
 /* ========================================
    Tablet
 ======================================== */
