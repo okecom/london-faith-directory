@@ -72,3 +72,13 @@ Route::get(
     '/manage/groups',
     [GroupManagementController::class, 'index']
 )->name('groups.manage.index');
+
+Route::get(
+    '/manage/organizations/{organization}/groups/create',
+    [GroupManagementController::class, 'create']
+)->name('groups.manage.create');
+
+Route::post(
+    '/manage/organizations/{organization}/groups',
+    [GroupManagementController::class, 'store']
+)->name('groups.manage.store');

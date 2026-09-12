@@ -5,7 +5,16 @@
 @section('content')
 
 <div class="page-card">
+    @if (session('success'))
 
+        <div
+            class="success-message"
+            role="status"
+        >
+            {{ session('success') }}
+        </div>
+
+    @endif
     <div class="management-heading">
 
         <div>
@@ -76,6 +85,20 @@
 
 
     @if ($selectedOrganization)
+
+        <div class="page-actions">
+
+            <a
+                href="{{ route(
+                    'groups.manage.create',
+                    $selectedOrganization
+                ) }}"
+                class="button"
+            >
+                + Create New Group
+            </a>
+
+</div>
 
         <div class="selected-organisation">
 
