@@ -137,116 +137,193 @@ class GroupManagementController extends Controller
             );
     }
 
-public function show(Group $group): View
-{
-    $group->load('organization');
+    public function show(Group $group): View
+    {
+        $group->load('organization');
 
-    return view('groups.manage.show', [
-        'group' => $group,
-    ]);
-}
-
-
-public function edit(Group $group): View
-{
-    $group->load('organization');
-
-    return view('groups.manage.edit', [
-        'group' => $group,
-    ]);
-}
-
-
-public function update(
-    Request $request,
-    Group $group
-): RedirectResponse {
-    $validated = $request->validate(
-        [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-            'description' => [
-                'nullable',
-                'string',
-            ],
-            'contact_name' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-            'telephone' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-            'email' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
-        ],
-        [
-            'name.required' =>
-                'Please enter the group name.',
-        ]
-    );
-
-    /*
-     * Head Office keeps its reserved name.
-     */
-    if ($group->is_head_office) {
-        $validated['name'] = 'Head Office';
+        return view('groups.manage.show', [
+            'group' => $group,
+        ]);
     }
 
-    /*
-     * Check for another active group with
-     * the same name in this organisation.
-     */
-    $duplicateExists = Group::where(
-            'organization_id',
-            $group->organization_id
-        )
-        ->where('name', $validated['name'])
-        ->where('id', '!=', $group->id)
-        ->exists();
 
-    if ($duplicateExists) {
-        return back()
-            ->withInput()
-            ->withErrors([
-                'name' =>
-                    'This organisation already has a group with that name.',
-            ]);
+    public function edit(Group $group): View
+    {
+        $group->load('organization');
+
+        return view('groups.manage.edit', [
+            'group' => $group,
+        ]);
     }
 
-    $group->update([
-        'name' => $validated['name'],
-        'description' =>
-            $validated['description'] ?? null,
-        'contact_name' =>
-            $validated['contact_name'] ?? null,
-        'telephone' =>
-            $validated['telephone'] ?? null,
-        'email' =>
-            $validated['email'] ?? null,
-    ]);
 
-    return redirect()
-        ->route('groups.manage.index', [
-            'organization_id' =>
-                $group->organization_id,
-        ])
-        ->with(
-            'success',
-            'Group #' .
-            $group->id .
-            ' (' .
-            $group->name .
-            ') was updated successfully.'
+    public function update(
+        Request $request,
+        Group $group
+    ): RedirectResponse {
+        $validated = $request->validate(
+            [
+                'name' => [
+                    'required',
+                    'string',
+                    'max:255',
+                ],
+                'description' => [
+                    'nullable',
+                    'string',
+                ],
+                'contact_name' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                ],
+                'telephone' => [
+                    'nullable',
+                    'string',
+                    'max:255',
+                ],
+                'email' => [
+                    'nullable',
+                    'email',
+                    'max:255',
+                ],
+            ],
+            [
+                'name.required' =>
+                    'Please enter the group name.',
+            ]
         );
-}
+
+        /*
+        * Head Office keeps its reserved name.
+        */
+        if ($group->is_head_office) {
+            $validated['name'] = 'Head Office';
+        }
+
+        /*
+        * Check for another active group with
+        * the same name in this organisation.
+        */
+        $duplicateExists = Group::where(
+                'organization_id',
+                $group->organization_id
+            )
+            ->where('name', $validated['name'])
+            ->where('id', '!=', $group->id)
+            ->exists();
+
+        if ($duplicateExists) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'name' =>
+                        'This organisation already has a group with that name.',
+                ]);
+        }
+
+        $group->update([
+            'name' => $validated['name'],
+            'description' =>
+                $validated['description'] ?? null,
+            'contact_name' =>
+                $validated['contact_name'] ?? null,
+            'telephone' =>
+                $validated['telephone'] ?? null,
+            'email' =>
+                $validated['email'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('groups.manage.index', [
+                'organization_id' =>
+                    $group->organization_id,
+            ])
+            ->with(
+                'success',
+                'Group #' .
+                $group->id .
+                ' (' .
+                $group->name .
+                ') was updated successfully.'
+            );
+    }
+
+    public function destroy(
+        Group $group
+    ): RedirectResponse {
+
+        abort_if(
+            $group->is_head_office,
+            403,
+            'The Head Office group cannot be archived.'
+        );
+
+        $organizationId = $group->organization_id;
+        $groupName = $group->name;
+        $groupId = $group->id;
+
+        $group->delete();
+
+        return redirect()
+            ->route('groups.manage.index', [
+                'organization_id' => $organizationId,
+            ])
+            ->with(
+                'success',
+                'Group #' .
+                $groupId .
+                ' (' .
+                $groupName .
+                ') was archived successfully.'
+            );
+    }
+
+
+    public function archived(
+        Organization $organization
+    ): View {
+        $groups = Group::onlyTrashed()
+            ->where(
+                'organization_id',
+                $organization->id
+            )
+            ->orderBy('name')
+            ->get();
+
+        return view('groups.manage.archived', [
+            'organization' => $organization,
+            'groups' => $groups,
+        ]);
+    }
+
+
+    public function restore(
+        Organization $organization,
+        int $group
+    ): RedirectResponse {
+
+        $group = Group::onlyTrashed()
+            ->where(
+                'organization_id',
+                $organization->id
+            )
+            ->findOrFail($group);
+
+        $group->restore();
+
+        return redirect()
+            ->route('groups.manage.archived', [
+                'organization' => $organization,
+            ])
+            ->with(
+                'success',
+                'Group #' .
+                $group->id .
+                ' (' .
+                $group->name .
+                ') was restored successfully.'
+            );
+    }
 
 }

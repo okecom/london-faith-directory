@@ -97,3 +97,20 @@ Route::put(
     '/manage/groups/{group}',
     [GroupManagementController::class, 'update']
 )->name('groups.manage.update');
+
+Route::delete(
+    '/manage/groups/{group}',
+    [GroupManagementController::class, 'destroy']
+)->name('groups.manage.destroy');
+
+
+Route::get(
+    '/manage/organizations/{organization}/groups/archived',
+    [GroupManagementController::class, 'archived']
+)->name('groups.manage.archived');
+
+
+Route::patch(
+    '/manage/organizations/{organization}/groups/{group}/restore',
+    [GroupManagementController::class, 'restore']
+)->name('groups.manage.restore');

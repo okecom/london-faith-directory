@@ -98,6 +98,15 @@
                 + Create New Group
             </a>
 
+            <a
+                href="{{ route(
+                    'groups.manage.archived',
+                    $selectedOrganization
+                ) }}"
+                class="button button-secondary"
+            >
+                Archived Groups
+            </a>
 </div>
 
         <div class="selected-organisation">
@@ -191,13 +200,33 @@
 
                                         @unless ($group->is_head_office)
 
-                                            <button
-                                                type="button"
-                                                class="button button-small button-delete"
-                                                disabled
+                                            <form
+                                                method="POST"
+                                                action="{{ route(
+                                                    'groups.manage.destroy',
+                                                    $group
+                                                ) }}"
+                                                class="delete-form"
+                                                onsubmit="return confirm(
+                                                    @js(
+                                                        'Are you sure you want to archive "' .
+                                                        $group->name .
+                                                        '"? It will no longer appear in the active group list.'
+                                                    )
+                                                );"
                                             >
-                                                Archive
-                                            </button>
+
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button
+                                                    type="submit"
+                                                    class="button button-small button-delete"
+                                                >
+                                                    Archive
+                                                </button>
+
+                                            </form>
 
                                         @endunless
 
