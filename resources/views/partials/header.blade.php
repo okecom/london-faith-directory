@@ -23,6 +23,10 @@
             <a href="{{ route('groups.manage.index') }}">
                 Manage Groups
             </a>
+            <a href="{{ route('events.manage.index') }}">
+                Manage Events
+            </a>
+
         </nav>
 
     </div>

@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\EventManagementController;
 use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\OrganizationManagementController;
 use App\Http\Controllers\OrganizationController;
@@ -114,3 +116,9 @@ Route::patch(
     '/manage/organizations/{organization}/groups/{group}/restore',
     [GroupManagementController::class, 'restore']
 )->name('groups.manage.restore');
+
+
+Route::get(
+    '/manage/events',
+    [EventManagementController::class, 'index']
+)->name('events.manage.index');
