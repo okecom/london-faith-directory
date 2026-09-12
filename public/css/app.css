@@ -592,6 +592,37 @@ a {
     margin: 0;
 }
 
+/* ========================================
+   Group management
+======================================== */
+
+.group-organisation-search {
+    margin-bottom: 30px;
+    padding: 20px;
+
+    border-radius: 6px;
+    background: #f4f6f8;
+}
+
+.group-organisation-search .form-group {
+    margin-bottom: 15px;
+}
+
+.selected-organisation {
+    margin: 25px 0;
+    padding: 18px;
+
+    border-left: 4px solid #1f3a5f;
+    background: #f4f6f8;
+}
+
+.selected-organisation h2 {
+    margin-top: 0;
+}
+
+.selected-organisation p {
+    margin-bottom: 0;
+}
 
 /* ========================================
    Tablet
@@ -677,6 +708,21 @@ a {
     }
 
     .button-small {
+        width: auto;
+    }
+
+    .group-organisation-search {
+    display: flex;
+    align-items: end;
+    gap: 15px;
+    }
+
+    .group-organisation-search .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+
+    .group-organisation-search .button {
         width: auto;
     }
 

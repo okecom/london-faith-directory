@@ -19,6 +19,10 @@
             <a href="{{ route('organizations.manage.index') }}">
                 Manage Organisations
             </a>
+
+            <a href="{{ route('groups.manage.index') }}">
+                Manage Groups
+            </a>
         </nav>
 
     </div>

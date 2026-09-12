@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\OrganizationManagementController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Support\Facades\Route;
@@ -66,3 +67,8 @@ Route::delete(
     '/manage/organizations/{organization}',
     [OrganizationManagementController::class, 'destroy']
 )->name('organizations.manage.destroy');
+
+Route::get(
+    '/manage/groups',
+    [GroupManagementController::class, 'index']
+)->name('groups.manage.index');
