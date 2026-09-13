@@ -147,3 +147,20 @@ Route::put(
     '/manage/events/{event}',
     [EventManagementController::class, 'update']
 )->name('events.manage.update');
+
+Route::delete(
+    '/manage/events/{event}',
+    [EventManagementController::class, 'destroy']
+)->name('events.manage.destroy');
+
+
+Route::get(
+    '/manage/groups/{group}/events/archived',
+    [EventManagementController::class, 'archived']
+)->name('events.manage.archived');
+
+
+Route::patch(
+    '/manage/groups/{group}/events/{event}/restore',
+    [EventManagementController::class, 'restore']
+)->name('events.manage.restore');

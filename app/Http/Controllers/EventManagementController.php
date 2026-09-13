@@ -285,5 +285,76 @@ class EventManagementController extends Controller
                 ') was updated successfully.'
             );
     }
+
+    public function destroy(
+        Event $event
+    ): RedirectResponse {
+        $organizationId = $event->group->organization_id;
+        $groupId = $event->group_id;
+        $eventId = $event->id;
+        $eventName = $event->name;
+
+        $event->delete();
+
+        return redirect()
+            ->route('events.manage.index', [
+                'organization_id' => $organizationId,
+                'group_id' => $groupId,
+            ])
+            ->with(
+                'success',
+                'Event #' .
+                $eventId .
+                ' (' .
+                $eventName .
+                ') was archived successfully.'
+            );
+    }
+
+
+    public function archived(
+        Group $group
+    ): View {
+        $group->load('organization');
+
+        $events = Event::onlyTrashed()
+            ->where('group_id', $group->id)
+            ->with([
+                'eventType',
+                'location',
+            ])
+            ->orderBy('start_datetime')
+            ->paginate(5);
+
+        return view('events.manage.archived', [
+            'group' => $group,
+            'events' => $events,
+        ]);
+    }
+
+
+    public function restore(
+        Group $group,
+        int $event
+    ): RedirectResponse {
+        $event = Event::onlyTrashed()
+            ->where('group_id', $group->id)
+            ->findOrFail($event);
+
+        $event->restore();
+
+        return redirect()
+            ->route('events.manage.archived', [
+                'group' => $group,
+            ])
+            ->with(
+                'success',
+                'Event #' .
+                $event->id .
+                ' (' .
+                $event->name .
+                ') was restored successfully.'
+            );
+    }
     
 }

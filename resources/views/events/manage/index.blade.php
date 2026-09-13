@@ -139,6 +139,17 @@
             + Create New Event
         </a>
 
+        <a
+            href="{{ route(
+                'events.manage.archived',
+                $selectedGroup
+            ) }}"
+            class="button button-secondary"
+        >
+            Archived Events
+        </a>
+
+
     </div>
         <div class="selected-organisation">
 
@@ -224,13 +235,33 @@
                                             Edit
                                         </a>
 
-                                        <button
-                                            type="button"
-                                            class="button button-small button-delete"
-                                            disabled
+                                        <form
+                                            method="POST"
+                                            action="{{ route(
+                                                'events.manage.destroy',
+                                                $event
+                                            ) }}"
+                                            class="delete-form"
+                                            onsubmit="return confirm(
+                                                @js(
+                                                    'Are you sure you want to archive "' .
+                                                    $event->name .
+                                                    '"? It will no longer appear in the active event list.'
+                                                )
+                                            );"
                                         >
-                                            Archive
-                                        </button>
+
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="button button-small button-delete"
+                                            >
+                                                Archive
+                                            </button>
+
+                                        </form>
 
                                     </div>
 
