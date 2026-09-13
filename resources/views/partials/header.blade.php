@@ -14,6 +14,10 @@
                 Organisation Finder
             </a>
 
+            <a href="{{ route('events.search') }}">
+                Event Finder
+            </a> 
+
             {{-- Future feature links can go here --}}
 
             <a href="{{ route('organizations.manage.index') }}">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventManagementController;
 use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\OrganizationManagementController;
@@ -163,4 +164,19 @@ Route::get(
 Route::patch(
     '/manage/groups/{group}/events/{event}/restore',
     [EventManagementController::class, 'restore']
-)->name('events.manage.restore');
+)->name('events.manage.restore');Route::get(
+    '/events',
+    [EventController::class, 'search']
+)->name('events.search');
+
+Route::get(
+    '/events/results',
+    [EventController::class, 'results']
+)->name('events.results');
+
+Route::get(
+    '/events/{event}',
+    [EventController::class, 'show']
+)->name('events.show');
+
+
