@@ -6,6 +6,17 @@
 
 <div class="page-card">
 
+    @if (session('success'))
+
+        <div
+            class="success-message"
+            role="status"
+        >
+            {{ session('success') }}
+        </div>
+
+    @endif
+
     <h1 class="page-heading">
         Manage Events
     </h1>
@@ -116,6 +127,19 @@
 
     @if ($selectedGroup)
 
+    <div class="page-actions">
+
+        <a
+            href="{{ route(
+                'events.manage.create',
+                $selectedGroup
+            ) }}"
+            class="button"
+        >
+            + Create New Event
+        </a>
+
+    </div>
         <div class="selected-organisation">
 
             <h2>

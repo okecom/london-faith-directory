@@ -122,3 +122,13 @@ Route::get(
     '/manage/events',
     [EventManagementController::class, 'index']
 )->name('events.manage.index');
+
+Route::get(
+    '/manage/groups/{group}/events/create',
+    [EventManagementController::class, 'create']
+)->name('events.manage.create');
+
+Route::post(
+    '/manage/groups/{group}/events',
+    [EventManagementController::class, 'store']
+)->name('events.manage.store');
