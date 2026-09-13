@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
+use Illuminate\Support\Facades\DB;
 use App\Models\Denomination;
 use App\Models\Location;
 use App\Models\Organization;
@@ -177,37 +179,77 @@ class OrganizationManagementController extends Controller
         /*
          * Religion ID is deliberately NOT saved
          * in the organizations table.
+         *
+         * Create the organisation and its required
+         * Head Office group in one transaction.
          */
-        $organization = Organization::create([
-            'name' => $validated['name'],
+        $organization = DB::transaction(
+            function () use ($validated, $photoPath) {
 
-            'denomination_id' =>
-                $validated['denomination_id'],
+                $organization = Organization::create([
+                    'name' => $validated['name'],
 
-            'location_id' =>
-                $validated['location_id'],
+                    'denomination_id' =>
+                        $validated['denomination_id'],
 
-            'description' =>
-                $validated['description'] ?? null,
+                    'location_id' =>
+                        $validated['location_id'],
 
-            'address' =>
-                $validated['address'],
+                    'description' =>
+                        $validated['description'] ?? null,
 
-            'website' =>
-                $validated['website'] ?? null,
+                    'address' =>
+                        $validated['address'],
 
-            'telephone' =>
-                $validated['telephone'] ?? null,
+                    'website' =>
+                        $validated['website'] ?? null,
 
-            'email' =>
-                $validated['email'] ?? null,
+                    'telephone' =>
+                        $validated['telephone'] ?? null,
 
-            'head' =>
-                $validated['head'] ?? null,
+                    'email' =>
+                        $validated['email'] ?? null,
 
-            'photo' =>
-                $photoPath,
-        ]);
+                    'head' =>
+                        $validated['head'] ?? null,
+
+                    'photo' =>
+                        $photoPath,
+                ]);
+
+
+                /*
+                 * Every organisation must have
+                 * one Head Office group.
+                 */
+                Group::create([
+                    'organization_id' =>
+                        $organization->id,
+
+                    'name' =>
+                        'Head Office',
+
+                    'description' =>
+                        'Main group for ' .
+                        $organization->name,
+
+                    'contact_name' =>
+                        $organization->head,
+
+                    'telephone' =>
+                        $organization->telephone,
+
+                    'email' =>
+                        $organization->email,
+
+                    'is_head_office' =>
+                        true,
+                ]);
+
+
+                return $organization;
+            }
+        );
 
 
         return redirect()
@@ -333,9 +375,9 @@ class OrganizationManagementController extends Controller
 
 
         /*
-        * Confirm that the selected denomination
-        * belongs to the selected religion.
-        */
+         * Confirm that the selected denomination
+         * belongs to the selected religion.
+         */
         $denomination = Denomination::findOrFail(
             $validated['denomination_id']
         );
@@ -349,9 +391,9 @@ class OrganizationManagementController extends Controller
 
 
         /*
-        * Keep the existing photo unless
-        * a replacement is uploaded.
-        */
+         * Keep the existing photo unless
+         * a replacement is uploaded.
+         */
         $photoPath = $organization->photo;
 
         if ($request->hasFile('photo')) {
@@ -411,28 +453,30 @@ class OrganizationManagementController extends Controller
                 $organization->id .
                 ' was updated successfully.'
             );
-    } 
-    
+    }
+
+
     public function destroy(
-            Organization $organization
-        ): RedirectResponse {
+        Organization $organization
+    ): RedirectResponse {
 
-            $organizationId = $organization->id;
-            $organizationName = $organization->name;
+        $organizationId = $organization->id;
+        $organizationName = $organization->name;
 
-            $organization->delete();
+        $organization->delete();
 
-            return redirect()
-                ->route('organizations.manage.index')
-                ->with(
-                    'success',
-                    'Organisation #' .
-                    $organizationId .
-                    ' (' .
-                    $organizationName .
-                    ') was archived successfully.'
-                );
-        }  
+        return redirect()
+            ->route('organizations.manage.index')
+            ->with(
+                'success',
+                'Organisation #' .
+                $organizationId .
+                ' (' .
+                $organizationName .
+                ') was archived successfully.'
+            );
+    }
+
 
     public function archived(Request $request): View
     {
@@ -474,5 +518,4 @@ class OrganizationManagementController extends Controller
                 ') was restored successfully.'
             );
     }
-
 }
