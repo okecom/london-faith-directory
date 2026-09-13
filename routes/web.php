@@ -132,3 +132,18 @@ Route::post(
     '/manage/groups/{group}/events',
     [EventManagementController::class, 'store']
 )->name('events.manage.store');
+
+Route::get(
+    '/manage/events/{event}',
+    [EventManagementController::class, 'show']
+)->name('events.manage.show');
+
+Route::get(
+    '/manage/events/{event}/edit',
+    [EventManagementController::class, 'edit']
+)->name('events.manage.edit');
+
+Route::put(
+    '/manage/events/{event}',
+    [EventManagementController::class, 'update']
+)->name('events.manage.update');

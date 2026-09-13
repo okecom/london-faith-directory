@@ -204,21 +204,25 @@
 
                                     <div class="crud-actions">
 
-                                        <button
-                                            type="button"
+                                        <a
+                                            href="{{ route(
+                                                'events.manage.show',
+                                                $event
+                                            ) }}"
                                             class="button button-small"
-                                            disabled
                                         >
                                             Show
-                                        </button>
+                                        </a>
 
-                                        <button
-                                            type="button"
+                                        <a
+                                            href="{{ route(
+                                                'events.manage.edit',
+                                                $event
+                                            ) }}"
                                             class="button button-small button-edit"
-                                            disabled
                                         >
                                             Edit
-                                        </button>
+                                        </a>
 
                                         <button
                                             type="button"

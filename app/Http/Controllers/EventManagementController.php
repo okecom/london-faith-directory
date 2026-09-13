@@ -175,4 +175,115 @@ class EventManagementController extends Controller
             );
     }
 
+    public function show(Event $event): View
+    {
+        $event->load([
+            'group.organization',
+            'eventType',
+            'location',
+        ]);
+
+        return view('events.manage.show', [
+            'event' => $event,
+        ]);
+    }
+
+
+    public function edit(Event $event): View
+    {
+        $event->load('group.organization');
+
+        $eventTypes = EventType::orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
+
+        return view('events.manage.edit', [
+            'event' => $event,
+            'eventTypes' => $eventTypes,
+            'locations' => $locations,
+        ]);
+    }
+
+
+    public function update(
+        Request $request,
+        Event $event
+    ): RedirectResponse {
+        $validated = $request->validate([
+            'event_type_id' => [
+                'required',
+                'exists:event_types,id',
+            ],
+            'location_id' => [
+                'required',
+                'exists:locations,id',
+            ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'description' => [
+                'nullable',
+                'string',
+            ],
+            'start_datetime' => [
+                'required',
+                'date',
+            ],
+            'end_datetime' => [
+                'nullable',
+                'date',
+                'after:start_datetime',
+            ],
+            'venue_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'address' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'contact_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'telephone' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
+            'website' => [
+                'nullable',
+                'url',
+                'max:255',
+            ],
+        ]);
+
+        $event->update($validated);
+
+        return redirect()
+            ->route('events.manage.index', [
+                'organization_id' =>
+                    $event->group->organization_id,
+                'group_id' =>
+                    $event->group_id,
+            ])
+            ->with(
+                'success',
+                'Event #' .
+                $event->id .
+                ' (' .
+                $event->name .
+                ') was updated successfully.'
+            );
+    }
+    
 }
