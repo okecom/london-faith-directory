@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
-use Illuminate\Http\RedirectResponse;
 use App\Models\Organization;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -38,13 +38,14 @@ class GroupManagementController extends Controller
         ]);
     }
 
+
     public function create(
         Organization $organization
     ): View {
         return view('groups.manage.create', [
             'organization' => $organization,
         ]);
-    }   
+    }
 
 
     public function store(
@@ -58,20 +59,24 @@ class GroupManagementController extends Controller
                     'string',
                     'max:255',
                 ],
+
                 'description' => [
                     'nullable',
                     'string',
                 ],
+
                 'contact_name' => [
                     'nullable',
                     'string',
                     'max:255',
                 ],
+
                 'telephone' => [
                     'nullable',
                     'string',
                     'max:255',
                 ],
+
                 'email' => [
                     'nullable',
                     'email',
@@ -84,18 +89,46 @@ class GroupManagementController extends Controller
             ]
         );
 
+
         /*
-        * Prevent duplicate active group names
-        * within the same organisation.
-        */
-        $duplicateExists = Group::where(
+         * Check active AND archived groups because
+         * the database unique constraint still
+         * includes soft-deleted records.
+         */
+        $duplicateGroup = Group::withTrashed()
+            ->where(
                 'organization_id',
                 $organization->id
             )
-            ->where('name', $validated['name'])
-            ->exists();
+            ->where(
+                'name',
+                $validated['name']
+            )
+            ->first();
 
-        if ($duplicateExists) {
+
+        if ($duplicateGroup) {
+
+            /*
+             * If the group exists but is archived,
+             * tell the user to restore it instead
+             * of attempting to create another copy.
+             */
+            if ($duplicateGroup->trashed()) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'name' =>
+                            'A group with this name is archived. Restore it from Archived Groups instead.',
+                    ]);
+            }
+
+
+            /*
+             * Otherwise an active group already
+             * exists with the same name.
+             */
             return back()
                 ->withInput()
                 ->withErrors([
@@ -104,28 +137,40 @@ class GroupManagementController extends Controller
                 ]);
         }
 
+
         $group = Group::create([
-            'organization_id' => $organization->id,
-            'name' => $validated['name'],
+            'organization_id' =>
+                $organization->id,
+
+            'name' =>
+                $validated['name'],
+
             'description' =>
                 $validated['description'] ?? null,
+
             'contact_name' =>
                 $validated['contact_name'] ?? null,
+
             'telephone' =>
                 $validated['telephone'] ?? null,
+
             'email' =>
                 $validated['email'] ?? null,
 
             /*
-            * Only the automatically created Head Office
-            * group receives this status.
-            */
-            'is_head_office' => false,
+             * Only the automatically created
+             * Head Office group receives
+             * Head Office status.
+             */
+            'is_head_office' =>
+                false,
         ]);
+
 
         return redirect()
             ->route('groups.manage.index', [
-                'organization_id' => $organization->id,
+                'organization_id' =>
+                    $organization->id,
             ])
             ->with(
                 'success',
@@ -136,6 +181,7 @@ class GroupManagementController extends Controller
                 ') was created successfully.'
             );
     }
+
 
     public function show(Group $group): View
     {
@@ -168,20 +214,24 @@ class GroupManagementController extends Controller
                     'string',
                     'max:255',
                 ],
+
                 'description' => [
                     'nullable',
                     'string',
                 ],
+
                 'contact_name' => [
                     'nullable',
                     'string',
                     'max:255',
                 ],
+
                 'telephone' => [
                     'nullable',
                     'string',
                     'max:255',
                 ],
+
                 'email' => [
                     'nullable',
                     'email',
@@ -194,26 +244,52 @@ class GroupManagementController extends Controller
             ]
         );
 
+
         /*
-        * Head Office keeps its reserved name.
-        */
+         * The Head Office group keeps its
+         * reserved name.
+         */
         if ($group->is_head_office) {
             $validated['name'] = 'Head Office';
         }
 
+
         /*
-        * Check for another active group with
-        * the same name in this organisation.
-        */
-        $duplicateExists = Group::where(
+         * Check active AND archived groups for
+         * another record using the same name.
+         *
+         * Exclude the current group itself.
+         */
+        $duplicateGroup = Group::withTrashed()
+            ->where(
                 'organization_id',
                 $group->organization_id
             )
-            ->where('name', $validated['name'])
-            ->where('id', '!=', $group->id)
-            ->exists();
+            ->where(
+                'name',
+                $validated['name']
+            )
+            ->where(
+                'id',
+                '!=',
+                $group->id
+            )
+            ->first();
 
-        if ($duplicateExists) {
+
+        if ($duplicateGroup) {
+
+            if ($duplicateGroup->trashed()) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'name' =>
+                            'A group with this name is archived. Restore it from Archived Groups instead.',
+                    ]);
+            }
+
+
             return back()
                 ->withInput()
                 ->withErrors([
@@ -222,17 +298,24 @@ class GroupManagementController extends Controller
                 ]);
         }
 
+
         $group->update([
-            'name' => $validated['name'],
+            'name' =>
+                $validated['name'],
+
             'description' =>
                 $validated['description'] ?? null,
+
             'contact_name' =>
                 $validated['contact_name'] ?? null,
+
             'telephone' =>
                 $validated['telephone'] ?? null,
+
             'email' =>
                 $validated['email'] ?? null,
         ]);
+
 
         return redirect()
             ->route('groups.manage.index', [
@@ -249,6 +332,7 @@ class GroupManagementController extends Controller
             );
     }
 
+
     public function destroy(
         Group $group
     ): RedirectResponse {
@@ -259,15 +343,24 @@ class GroupManagementController extends Controller
             'The Head Office group cannot be archived.'
         );
 
-        $organizationId = $group->organization_id;
-        $groupName = $group->name;
-        $groupId = $group->id;
+
+        $organizationId =
+            $group->organization_id;
+
+        $groupName =
+            $group->name;
+
+        $groupId =
+            $group->id;
+
 
         $group->delete();
 
+
         return redirect()
             ->route('groups.manage.index', [
-                'organization_id' => $organizationId,
+                'organization_id' =>
+                    $organizationId,
             ])
             ->with(
                 'success',
@@ -283,6 +376,7 @@ class GroupManagementController extends Controller
     public function archived(
         Organization $organization
     ): View {
+
         $groups = Group::onlyTrashed()
             ->where(
                 'organization_id',
@@ -291,9 +385,13 @@ class GroupManagementController extends Controller
             ->orderBy('name')
             ->get();
 
+
         return view('groups.manage.archived', [
-            'organization' => $organization,
-            'groups' => $groups,
+            'organization' =>
+                $organization,
+
+            'groups' =>
+                $groups,
         ]);
     }
 
@@ -310,11 +408,14 @@ class GroupManagementController extends Controller
             )
             ->findOrFail($group);
 
+
         $group->restore();
+
 
         return redirect()
             ->route('groups.manage.archived', [
-                'organization' => $organization,
+                'organization' =>
+                    $organization,
             ])
             ->with(
                 'success',
@@ -325,5 +426,4 @@ class GroupManagementController extends Controller
                 ') was restored successfully.'
             );
     }
-
 }
