@@ -6,9 +6,16 @@ use App\Http\Controllers\GroupManagementController;
 use App\Http\Controllers\OrganizationManagementController;
 use App\Http\Controllers\OrganizationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SiteDashboardController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\OrganizationDashboardController;
+use App\Http\Controllers\OrganizationAdminController;
+use App\Http\Controllers\ChangePasswordController;
 
 
-
+// --------------------------------------------------
+// PUBLIC ROUTES
+// --------------------------------------------------
 
 Route::get(
     '/manage/organizations/archived',
@@ -180,3 +187,104 @@ Route::get(
 )->name('events.show');
 
 
+// --------------------------------------------------
+// AUTHENTICATED PASSWORD CHANGE ROUTES
+// INSERT THE NEW CODE HERE
+// --------------------------------------------------
+
+Route::middleware('auth')->group(function () {
+    Route::get(
+        '/change-password',
+        [ChangePasswordController::class, 'edit']
+    )->name('password.change.edit');
+
+    Route::put(
+        '/change-password',
+        [ChangePasswordController::class, 'update']
+    )->name('password.change.update');
+});
+
+
+// --------------------------------------------------
+// SITE ADMIN ROUTES
+// --------------------------------------------------
+
+
+Route::middleware([
+    'auth',
+    'role:' . \App\Models\User::ROLE_SITE_ADMIN,
+])->group(function () {
+    Route::get('/site/dashboard', [SiteDashboardController::class, 'index'])
+        ->name('site.dashboard');
+
+   Route::get(
+        '/site/organization-admins',
+        [OrganizationAdminController::class, 'index']
+    )->name('site.organization-admins.index');
+
+    Route::get(
+        '/site/organization-admins/create',
+        [OrganizationAdminController::class, 'create']
+    )->name('site.organization-admins.create');
+
+    Route::post(
+        '/site/organization-admins',
+        [OrganizationAdminController::class, 'store']
+    )->name('site.organization-admins.store'); 
+    
+    Route::patch(
+        '/site/organization-admins/{user}/deactivate',
+        [OrganizationAdminController::class, 'deactivate']
+    )->name('site.organization-admins.deactivate');
+
+    Route::patch(
+        '/site/organization-admins/{user}/reactivate',
+        [OrganizationAdminController::class, 'reactivate']
+    )->name('site.organization-admins.reactivate');
+
+
+    Route::get(
+        '/site/organization-admins/{user}/replace',
+        [OrganizationAdminController::class, 'replace']
+    )->name('site.organization-admins.replace');
+
+    Route::post(
+        '/site/organization-admins/{user}/replace',
+        [OrganizationAdminController::class, 'storeReplacement']
+    )->name('site.organization-admins.store-replacement');
+
+});
+
+
+
+// --------------------------------------------------
+// REGISTERED USER ROUTES
+// --------------------------------------------------
+
+
+Route::middleware([
+    'auth',
+    'role:' . \App\Models\User::ROLE_REGISTERED_USER,
+])->group(function () {
+    Route::get('/user/dashboard', [UserDashboardController::class, 'index'])
+        ->name('user.dashboard');
+});
+
+
+
+
+// --------------------------------------------------
+// ORGANISATION ADMIN ROUTES
+// --------------------------------------------------
+
+
+Route::middleware([
+    'auth',
+    'role:' . \App\Models\User::ROLE_ORGANISATION_ADMIN,
+    'password.changed',
+])->group(function () {
+    Route::get(
+        '/organisation/dashboard',
+        [OrganizationDashboardController::class, 'index']
+    )->name('organisation.dashboard');
+});
