@@ -10,10 +10,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ReligionSeeder::class,
-            DenominationSeeder::class,
             LocationSeeder::class,
             OrganizationSeeder::class,
-
             EventTypeSeeder::class,
             HeadOfficeGroupSeeder::class,
         ]);
