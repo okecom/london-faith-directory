@@ -11,6 +11,8 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\OrganizationDashboardController;
 use App\Http\Controllers\OrganizationAdminController;
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\MediaManagementController;
+use App\Http\Controllers\MediaController;
 
 
 // --------------------------------------------------
@@ -48,6 +50,16 @@ Route::get(
     [EventController::class, 'show']
 )->name('events.show');
 
+Route::get(
+    '/media/{media}',
+    [MediaController::class, 'show']
+)->name('media.show');
+
+Route::get(
+    '/media/{media}/access',
+    [MediaController::class, 'access']
+)->name('media.access');
+
 
 // --------------------------------------------------
 // MANAGED ROUTES
@@ -59,6 +71,8 @@ Route::middleware([
     'password.changed',
 ])->group(function () {
 
+
+// Organizations routes
             Route::get(
                 '/manage/organizations/archived',
                 [OrganizationManagementController::class, 'archived']
@@ -105,6 +119,7 @@ Route::middleware([
                 [OrganizationManagementController::class, 'destroy']
             )->name('organizations.manage.destroy');
 
+     // Group routes      
             Route::get(
                 '/manage/groups',
                 [GroupManagementController::class, 'index']
@@ -152,7 +167,7 @@ Route::middleware([
                 [GroupManagementController::class, 'restore']
             )->name('groups.manage.restore');
 
-
+// Events routes
             Route::get(
                 '/manage/events',
                 [EventManagementController::class, 'index']
@@ -199,7 +214,56 @@ Route::middleware([
                 '/manage/groups/{group}/events/{event}/restore',
                 [EventManagementController::class, 'restore']
             )->name('events.manage.restore');
-         
+
+
+         // Media routes
+
+            Route::get(
+                '/manage/media',
+                [MediaManagementController::class, 'index']
+            )->name('media.manage.index');
+
+            Route::get(
+                '/manage/groups/{group}/media/create',
+                [MediaManagementController::class, 'create']
+            )->name('media.manage.create');
+
+            Route::post(
+                '/manage/groups/{group}/media',
+                [MediaManagementController::class, 'store']
+            )->name('media.manage.store');
+
+            Route::get(
+                '/manage/media/{media}',
+                [MediaManagementController::class, 'show']
+            )->name('media.manage.show');
+
+            Route::get(
+                '/manage/media/{media}/edit',
+                [MediaManagementController::class, 'edit']
+            )->name('media.manage.edit');
+
+            Route::put(
+                '/manage/media/{media}',
+                [MediaManagementController::class, 'update']
+            )->name('media.manage.update');
+
+            Route::delete(
+                '/manage/media/{media}',
+                [MediaManagementController::class, 'destroy']
+            )->name('media.manage.destroy');
+
+            Route::get(
+                '/manage/groups/{group}/media/archived',
+                [MediaManagementController::class, 'archived']
+            )->name('media.manage.archived');
+
+            Route::patch(
+                '/manage/groups/{group}/media/{media}/restore',
+                [MediaManagementController::class, 'restore']
+            )->name('media.manage.restore');
+
+
 
 });
 
