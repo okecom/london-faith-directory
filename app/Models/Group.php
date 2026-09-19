@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+
 class Group extends Model
 {
     use SoftDeletes;
@@ -33,5 +34,12 @@ class Group extends Model
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+   
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(Media::class);
     }
 }

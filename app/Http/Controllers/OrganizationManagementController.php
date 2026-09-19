@@ -8,6 +8,7 @@ use App\Models\Denomination;
 use App\Models\Location;
 use App\Models\Organization;
 use App\Models\Religion;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,7 +17,28 @@ class OrganizationManagementController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize(
+            'viewAny',
+            Organization::class
+        );
+
         $query = Organization::query();
+
+        /*
+         * Organisation Administrators may only see
+         * their assigned organisation.
+         *
+         * Site Administrators may see all organisations.
+         */
+        if (
+            $request->user()->role ===
+            User::ROLE_ORGANISATION_ADMIN
+        ) {
+            $query->where(
+                'id',
+                $request->user()->organization_id
+            );
+        }
 
         if ($request->filled('record_number')) {
             $query->where(
@@ -38,6 +60,15 @@ class OrganizationManagementController extends Controller
 
     public function create(): View
     {
+        /*
+         * Only Site Administrators may create
+         * new organisations.
+         */
+        $this->authorize(
+            'create',
+            Organization::class
+        );
+
         $religions = Religion::orderBy('name')->get();
 
         $denominations = Denomination::orderBy('name')->get();
@@ -54,6 +85,15 @@ class OrganizationManagementController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        /*
+         * Protect against a forged direct POST.
+         * Only Site Administrators may create organisations.
+         */
+        $this->authorize(
+            'create',
+            Organization::class
+        );
+
         $validated = $request->validate(
             [
                 'religion_id' => [
@@ -160,11 +200,11 @@ class OrganizationManagementController extends Controller
         $photoPath = null;
 
         if ($request->hasFile('photo')) {
-
             $photo = $request->file('photo');
 
             $fileName =
-                time() . '_' . $photo->getClientOriginalName();
+                time() . '_' .
+                $photo->getClientOriginalName();
 
             $photo->move(
                 public_path('images/organisations'),
@@ -185,9 +225,9 @@ class OrganizationManagementController extends Controller
          */
         $organization = DB::transaction(
             function () use ($validated, $photoPath) {
-
                 $organization = Organization::create([
-                    'name' => $validated['name'],
+                    'name' =>
+                        $validated['name'],
 
                     'denomination_id' =>
                         $validated['denomination_id'],
@@ -266,6 +306,16 @@ class OrganizationManagementController extends Controller
     public function edit(
         Organization $organization
     ): View {
+        /*
+         * Site Administrators may edit any organisation.
+         * Organisation Administrators may edit only
+         * their assigned organisation.
+         */
+        $this->authorize(
+            'update',
+            $organization
+        );
+
         $organization->load([
             'denomination.religion',
             'location',
@@ -290,6 +340,15 @@ class OrganizationManagementController extends Controller
         Request $request,
         Organization $organization
     ): RedirectResponse {
+        /*
+         * Authorize before validating or changing
+         * any submitted data.
+         */
+        $this->authorize(
+            'update',
+            $organization
+        );
+
         $validated = $request->validate(
             [
                 'religion_id' => [
@@ -397,11 +456,11 @@ class OrganizationManagementController extends Controller
         $photoPath = $organization->photo;
 
         if ($request->hasFile('photo')) {
-
             $photo = $request->file('photo');
 
             $fileName =
-                time() . '_' . $photo->getClientOriginalName();
+                time() . '_' .
+                $photo->getClientOriginalName();
 
             $photo->move(
                 public_path('images/organisations'),
@@ -414,7 +473,8 @@ class OrganizationManagementController extends Controller
 
 
         $organization->update([
-            'name' => $validated['name'],
+            'name' =>
+                $validated['name'],
 
             'denomination_id' =>
                 $validated['denomination_id'],
@@ -459,9 +519,20 @@ class OrganizationManagementController extends Controller
     public function destroy(
         Organization $organization
     ): RedirectResponse {
+        /*
+         * Organisation archiving is a Site
+         * Administrator operation.
+         */
+        $this->authorize(
+            'delete',
+            $organization
+        );
 
-        $organizationId = $organization->id;
-        $organizationName = $organization->name;
+        $organizationId =
+            $organization->id;
+
+        $organizationName =
+            $organization->name;
 
         $organization->delete();
 
@@ -480,6 +551,20 @@ class OrganizationManagementController extends Controller
 
     public function archived(Request $request): View
     {
+        /*
+         * Organisation archive management is
+         * restricted to Site Administrators.
+         *
+         * The create ability is intentionally used
+         * here because OrganizationPolicy::create()
+         * is Site Administrator only, while the
+         * before() method grants Site Administrators.
+         */
+        $this->authorize(
+            'create',
+            Organization::class
+        );
+
         $query = Organization::onlyTrashed();
 
         if ($request->filled('record_number')) {
@@ -500,10 +585,20 @@ class OrganizationManagementController extends Controller
     }
 
 
-    public function restore(int $organization): RedirectResponse
-    {
+    public function restore(
+        int $organization
+    ): RedirectResponse {
         $organization = Organization::onlyTrashed()
             ->findOrFail($organization);
+
+        /*
+         * Authorize the actual archived Organisation
+         * before restoring it.
+         */
+        $this->authorize(
+            'restore',
+            $organization
+        );
 
         $organization->restore();
 
