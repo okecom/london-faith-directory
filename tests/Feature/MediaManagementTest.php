@@ -598,3 +598,42 @@ it('rejects an external url when an existing uploaded file is retained', functio
     Storage::disk('public')
         ->assertExists($path);
 });
+
+it('rejects unsupported uploaded file types', function () {
+    Storage::fake('public');
+
+    $organization = createManagementTestOrganization();
+    $group = createManagementTestGroup($organization);
+    $siteAdmin = createManagementSiteAdmin();
+
+    $file = UploadedFile::fake()->create(
+        'unsafe.exe',
+        100,
+        'application/x-msdownload'
+    );
+
+    $response = $this
+        ->actingAs($siteAdmin)
+        ->from(route('media.manage.create', $group))
+        ->post(
+            route('media.manage.store', $group),
+            [
+                'title' => 'Unsupported Upload',
+                'description' =>
+                    'Unsupported file type test.',
+                'type' => 'document',
+                'file' => $file,
+                'access_level' => Media::ACCESS_PUBLIC,
+            ]
+        );
+
+    $response
+        ->assertRedirect(
+            route('media.manage.create', $group)
+        )
+        ->assertSessionHasErrors('file');
+
+    $this->assertDatabaseMissing('media', [
+        'title' => 'Unsupported Upload',
+    ]);
+});

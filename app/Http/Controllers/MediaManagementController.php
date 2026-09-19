@@ -93,6 +93,7 @@ public function store(
         'file' => [
             'nullable',
             'file',
+            'mimetypes:application/pdf,image/jpeg,image/png,image/gif,image/webp,audio/mpeg,audio/wav,audio/ogg,video/mp4,video/webm,video/quicktime',
             'max:10240',
         ],
         'external_url' => [
@@ -210,6 +211,7 @@ public function update(
         'file' => [
             'nullable',
             'file',
+            'mimetypes:application/pdf,image/jpeg,image/png,image/gif,image/webp,audio/mpeg,audio/wav,audio/ogg,video/mp4,video/webm,video/quicktime',
             'max:10240',
         ],
         'external_url' => [
