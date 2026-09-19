@@ -227,8 +227,11 @@ public function update(
     ]);
 
     if (
-        $request->hasFile('file') &&
-        ! empty($validated['external_url'])
+        ! empty($validated['external_url']) &&
+        (
+            $request->hasFile('file') ||
+            $media->file_path
+        )
     ) {
         return back()
             ->withErrors([
@@ -237,7 +240,7 @@ public function update(
             ])
             ->withInput();
     }
-
+    
     $oldDisk = $media->access_level === Media::ACCESS_PUBLIC
         ? 'public'
         : 'local';
